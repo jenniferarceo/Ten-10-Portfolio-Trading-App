@@ -5,7 +5,7 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="12345678!",
+    password="c0nygre",
     database="Portfolio"
 )
 @app.route('/', methods=['GET'])
