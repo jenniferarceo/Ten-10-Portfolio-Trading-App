@@ -22,7 +22,7 @@ def get_transactions():
 
     cursor.close()
     #return jsonify(result)
-    return render_template('stocks.html', transactions=result)
+    return render_template('transactions.html', transactions=result)
 
 
 @app.route('/transactions', methods=['POST'])
