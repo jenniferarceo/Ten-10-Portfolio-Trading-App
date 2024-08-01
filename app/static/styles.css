@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Lexend:wght@100..900&display=swap');
+
+* {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+}
+
+body {
+    background-color: #3F3B4F;
+    margin: 30px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 16px;
+}
+
+.table {
+    background-color: white;
+}
+
+#linegraph {
+    background-color: white;
+}
+
+#piechart {
+    background-color: white;
+}
