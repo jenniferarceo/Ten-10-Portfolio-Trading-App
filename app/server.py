@@ -22,7 +22,8 @@ def get_transactions():
     result = cursor.fetchall()
 
     cursor.close()
-    return jsonify(result)
+    #return jsonify(result)
+    return render_template('stocks.html', transactions=result)
 
 
 @app.route('/transactions', methods=['POST'])
@@ -49,21 +50,36 @@ def get_stocks():
     result = cursor.fetchall()
 
     cursor.close()
-    return jsonify(result)
+    #return jsonify(result)
+    return render_template('stocks.html', stocks=result)
+
+
+# @app.route('/stocks', methods=['PUT'])
+# def update_stocks():
+#     ticker = request.json['ticker']
+#     price = request.json['price']
+#     cursor = mydb.cursor()
+
+#     for t in ticker:
+#         cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
+
+#     mydb.commit()
+#     cursor.close()
+#     return jsonify({'message': 'Stock updated successfully'})
 
 
 @app.route('/stocks', methods=['PUT'])
-def update_stocks():
-    ticker = request.json['ticker']
-    price = request.json['price']
+def udpdate_stocks():
+    stock_updates = request.json
     cursor = mydb.cursor()
-
-    for t in ticker:
+    for update in stock_updates:
+        ticker = request.json['ticker']
+        price = update['price']
+        
         cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
-
     mydb.commit()
     cursor.close()
-    return jsonify({'message': 'Stock updated successfully'})
+    return jsonify({'message': 'Stocks updated successfully'})
 
 # PORTFOLIO TABLE
 # - get all items
