@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Transactions</title>
+    </head>
+    <body>
+        <h1>Transactions</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Transaction Type</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Transaction Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction[2] }} </td>
+                    <td>{{ transaction[1] }} </td>
+                    <td>{{ transaction[3] }} </td>
+                    <td>{{ transaction[4] }} </td>
+                    <td>{{ transaction[5] }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>
