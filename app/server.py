@@ -8,6 +8,7 @@ mydb = mysql.connector.connect(
     password="c0nygre",
     database="Portfolio"
 )
+
 @app.route('/', methods=['GET'])
 def start_page():
     # return "Hello World"
