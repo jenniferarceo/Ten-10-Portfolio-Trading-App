@@ -11,10 +11,11 @@ mydb = mysql.connector.connect(
 
 @app.route('/', methods=['GET'])
 def start_page():
-    # return "Hello World"
+    # start up our page. Maybe call our javascript to render stuff ** CHECK
     return render_template("home.html")
 
-@app.route('/transactions', methods=['GET'])
+@app.route('/api/transactions', methods=['GET'])
+# Get the json list of transactions from our database
 def get_transactions():
     cursor = mydb.cursor()
 
@@ -23,17 +24,21 @@ def get_transactions():
 
     cursor.close()
     #return jsonify(result)
-    return render_template('transactions.html', transactions=result)
+    return jsonify(result)
 
 
-@app.route('/transactions', methods=['POST'])
+@app.route('/api/add-transaction', methods=['POST'])
+# add a transaction to our database given user inputs from payload
 def add_transaction():
     transactiontype = request.json['transactiontype']
     ticker = request.json['ticker']
-    price = request.json['price']
     quantity = request.json['quantity']
+    type = request.json['type'] # Buy or Sell
 
     cursor = mydb.cursor()
+    cursor.execute("Select price from Stocks WHERE ticker == %s", ticker)
+    price = cursor.fetchall()
+
     cursor.execute("INSERT INTO Transactions (transactiontype, ticker, price, quantity) VALUES (%s, %s, %s, %s)",
                    (transactiontype, ticker, price, quantity))
 
@@ -41,8 +46,19 @@ def add_transaction():
     cursor.close()
     return jsonify({'message': 'Transaction completed successfully'})
 
+@app.route('/api/check-price', methods=['GET'])
+# Checks the price of a stock given a ticker
+def check_stock_price():
+    cursor = mydb.cursor()
+    ticker = request.json['ticker']
+    cursor.execute("Select price from Stocks where ticker == %s", ticker)
+    result = cursor.fetchall()
 
-@app.route('/stocks', methods=['GET'])
+    cursor.close()
+    return jsonify(result)
+
+@app.route('/api/stocks', methods=['GET'])
+# Gets the list of stocks from our database
 def get_stocks():
     cursor = mydb.cursor()
 
@@ -50,33 +66,15 @@ def get_stocks():
     result = cursor.fetchall()
 
     cursor.close()
-    #return jsonify(result)
-    return render_template('stocks.html', stocks=result)
+    return jsonify(result)
 
-
-# @app.route('/stocks', methods=['PUT'])
-# def update_stocks():
-#     ticker = request.json['ticker']
-#     price = request.json['price']
-#     cursor = mydb.cursor()
-
-#     for t in ticker:
-#         cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
-
-#     mydb.commit()
-#     cursor.close()
-#     return jsonify({'message': 'Stock updated successfully'})
-
-
-@app.route('/stocks', methods=['PUT'])
-def udpdate_stocks():
-    stock_updates = request.json
+@app.route('/api/update-stock', methods=['PUT'])
+# Updates the price of (one) stock given ticker
+def update_stocks():
+    ticker = request.json['ticker']
+    price = request.json['price']
     cursor = mydb.cursor()
-    for update in stock_updates:
-        ticker = request.json['ticker']
-        price = update['price']
-        
-        cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
+    cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
     mydb.commit()
     cursor.close()
     return jsonify({'message': 'Stocks updated successfully'})
@@ -94,10 +92,6 @@ def udpdate_stocks():
 # VALUES('BUY', 'NVDA', 110.00, 500)''')
 # mydb.commit()
 # print(mycursor.rowcount, "records inserted.")
-
-@app.route('/form', methods=['PUT'])
-def test_form():
-    return None
 
 if __name__ == '__main__':
     app.run()

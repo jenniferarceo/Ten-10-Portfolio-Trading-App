@@ -5,6 +5,31 @@
         <title>Transactions</title>
     </head>
     <body>
+        <h1>Check Price</h1>
+        <form action="{{ url_for('check_stock_price')}}" method="post">
+                <label for="ticker1" class="form-label">TICKER</label>
+                <input name="ticker" type="text" class="form-control" id="ticker1" required>
+                <h3 id = "priceCheck">PRICE SHOWS UP HERE</h3>
+                <button type="submit" class="btn btn-primary">CHECK PRICE</button>
+        </form>
+
+        <h1>Place New Order</h1>
+        <form action="{{ url_for('add_transaction')}}" method="post">
+                <label for="ticker" class="form-label">TICKER</label>
+                <input name="ticker" type="text" class="form-control" id="ticker" required>
+
+                <label for="transactionType" class="form-label">TRANSACTION TYPE</label>
+                <select name="transaction-type" id="transactionType" required>
+                    <option value="SELL">BUY</option>
+                    <option value="SELL">SELL</option>
+                </select>
+
+                <label for="quantity" class="form-label">QUANTITY</label>
+                <input name="quantity" type="number" class="form-control" id="quantity" required>
+
+                <button type="submit" class="btn btn-primary">PLACE ORDER</button>
+        </form>
+
         <h1>Transactions</h1>
         <table>
             <thead>
