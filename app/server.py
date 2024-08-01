@@ -78,5 +78,9 @@ def update_stocks():
 # mydb.commit()
 # print(mycursor.rowcount, "records inserted.")
 
+@app.route('/form', methods=['PUT'])
+def test_form():
+    return None
+
 if __name__ == '__main__':
     app.run()
