@@ -3,29 +3,36 @@
 * {
     font-family: "Lexend", sans-serif;
     font-optical-sizing: auto;
+    color: #373347;
 }
 
 body {
     background-color: #3F3B4F;
-    margin: 30px;
+    margin: 30px 0 30px 0;
 }
 
 h2 {
-    font-size: 24px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 h3 {
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
-.table {
-    background-color: white;
+#form {
+    background-color: #F4F4F4;
 }
 
-#linegraph {
-    background-color: white;
+.tab-content {
+    background-color: #F4F4F4;
 }
 
-#piechart {
-    background-color: white;
+#linegraph-container {
+    background-color: #F4F4F4;
+}
+
+#piechart-container {
+    background-color: #F4F4F4;
 }
