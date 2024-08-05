@@ -26,6 +26,45 @@ def get_transactions():
     #return jsonify(result)
     return jsonify(result)
 
+@app.route('/api/holdings', methods=['GET'])
+# Get the json list of transactions from our database
+def get_holdings():
+    cursor = mydb.cursor()
+    cursor.execute("Select * from Transactions")
+    transactions = cursor.fetchall()
+    cursor.execute("Select * from Stocks")
+    stocks = cursor.fetchall()
+    cursor.close()
+    stock_prices = {}
+    #Convert stocks from list to dictionary
+    for stock in stocks:
+        stock_prices[stock[0]] = stock[2]
+
+    holding_amounts = {}
+    print(stocks)
+    # Calculates the holding amount for each ticker
+    for transaction in transactions:
+        # From database: int_key, type, ticker, price, volume, date
+        transaction_type = transaction[1]
+        ticker = transaction[2]
+        volume = transaction[4]
+        if ticker in holding_amounts.keys():
+            if transaction_type == "BUY":
+                holding_amounts[ticker] += volume
+            elif transaction_type == "SELL":
+                holding_amounts[ticker] -= volume
+        else:
+            if transaction_type == "BUY":
+                holding_amounts[ticker] = volume
+            elif transaction_type == "SELL":
+                holding_amounts[ticker] = -volume
+    holdings = []
+    for ticker in holding_amounts.keys():
+        holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker]}
+        holdings.append(holding)
+    print(holdings)
+    return jsonify(holdings)
+
 
 @app.route('/api/addTransaction', methods=['POST'])
 # add a transaction to our database given user inputs from payload

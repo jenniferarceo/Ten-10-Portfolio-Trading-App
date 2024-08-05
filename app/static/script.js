@@ -71,10 +71,10 @@ window.onload = function() {
     
     }
 
-   // Async function for getting transactions data
-   async function getTransactions(){
+   // Async function for getting Holdings data
+   async function getHoldings(){
 //   let url = 'https://c4rm9elh30.execute-api.us-east-1.amazonaws.com/default/cachedPriceData?ticker=TSLA'
-    let url = '/api/transactions'
+    let url = '/api/holdings'
 //    let response = await fetch(url).then(res => {
 //        if(!res.ok){
 //        console.error("Backend responded with ${res.status} error");
@@ -131,7 +131,7 @@ async function addTransaction(event) {
        // check if transaction was successful
        if (response.ok) {
            alert(result.message);
-           //getTransactions(); this will just reload the transactions page if the transaction was successful
+           getTransactions(); //this will just reload the transactions page if the transaction was successful
        } else {
            alert('Error adding transacion: ' + result.message);
        }
@@ -145,6 +145,7 @@ async function addTransaction(event) {
 document.getElementByID('transaction-Form').addEventListener('submit', addTransaction); //will need to give the html form a form id
 
 // display portfolio
+// Clean-up transactions to have net holdings (i.e buy 100 then sell 50 results in 50 of those stocks at that purchase price left)
 function displayPortfolio(data) {
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = '';
@@ -177,4 +178,4 @@ function displayPortfolio(data) {
     });
 }
 
-window.onload = getTransactions;
+window.onload = getHoldings;
