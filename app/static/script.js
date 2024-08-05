@@ -70,3 +70,31 @@ window.onload = function() {
     chart.render();
     
     }
+
+   // Async function for getting transactions data
+   async function getTransactions(){
+//   let url = 'https://c4rm9elh30.execute-api.us-east-1.amazonaws.com/default/cachedPriceData?ticker=TSLA'
+    let url = '/api/transactions'
+//    let response = await fetch(url).then(res => {
+//        if(!res.ok){
+//        console.error("Backend responded with ${res.status} error");
+//        return null;
+//        }
+//        return res.json();
+//    }, error=> {
+//        console.error("Could not reach backend", error);
+//        return null;
+//    });
+    let response = await fetch(url);
+    let result = await response.json();
+    if (response.ok){
+        console.log("Successfully got Data");
+        console.log(result);
+        return result;
+    }else{
+        alert("Error getting transactions: " + result.message);
+        return null;
+    }
+   }
+
+   getTransactions();
