@@ -90,7 +90,8 @@ window.onload = function() {
     if (response.ok){
         console.log("Successfully got Data");
         console.log(result);
-        return result;
+        displayPortfolio(result);
+//        return result;
     }else{
         alert("Error getting transactions: " + result.message);
         return null;
@@ -99,46 +100,81 @@ window.onload = function() {
 
    getTransactions();
 
-   //asynchronous function to add a transaction
+//    asynchronous function to add a transaction
 async function addTransaction(event) {
-    //prevent the form from submitting the default way
-    event.preventDefault();
+   //prevent the form from submitting the default way
+   event.preventDefault();
 
-    const transactiontype = document.getElementByID('transaction-type').value;
-    const ticker = document.getElementById('ticker').value;
-    const quantity = document.getElementById('quantity').value;
+   const transactiontype = document.getElementByID('transaction-type').value;
+   const ticker = document.getElementById('ticker').value;
+   const quantity = document.getElementById('quantity').value;
 
-    //prepare the request payload
-    const transactionData = {
-        transactiontype: transactiontype,
-        ticker: ticker,
-        quantity: parseInt(quantity)
-    };
+   //prepare the request payload
+   const transactionData = {
+       transactiontype: transactiontype,
+       ticker: ticker,
+       quantity: parseInt(quantity)
+   };
 
-    try {
-        // send a POST request to the server to add the transaction
-        const response = await fetch('/api/add-transaction', {
-            method: 'POST',
-            headers: {
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify(transactionData)
-        });
+   try {
+       // send a POST request to the server to add the transaction
+       const response = await fetch('/api/add-transaction', {
+           method: 'POST',
+           headers: {
+               'Content-Type':'application/json'
+           },
+           body: JSON.stringify(transactionData)
+       });
 
-        // Parse the JSON response from the server
-        const result = await response.json();
-        // check if transaction was successful
-        if (response.ok) {
-            alert(result.message);
-            //getTransactions(); this will just reload the transactions page if the transaction was successful
-        } else {
-            alert('Error adding transacion: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error adding transaction'); //just display a generic error message after logging the errors to the console
-    }
+       // Parse the JSON response from the server
+       const result = await response.json();
+       // check if transaction was successful
+       if (response.ok) {
+           alert(result.message);
+           //getTransactions(); this will just reload the transactions page if the transaction was successful
+       } else {
+           alert('Error adding transacion: ' + result.message);
+       }
+   } catch (error) {
+       console.error('Error:', error);
+       alert('Error adding transaction'); //just display a generic error message after logging the errors to the console
+   }
 }
 
 //handle form submission
 document.getElementByID('transaction-Form').addEventListener('submit', addTransaction); //will need to give the html form a form id
+
+// display portfolio
+function displayPortfolio(data) {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+
+    data.forEach(item => {
+        const row = document.createElement('tr');
+
+        // Create and append cells to the row
+        const symbol = document.createElement('td');
+        symbol.textContent = item[2];
+        row.appendChild(symbol);
+
+        const qty = document.createElement('td');
+        qty.textContent = item[4];
+        row.appendChild(qty);
+
+        const purchasePrice = document.createElement('td');
+        purchasePrice.textContent = item[3];
+        row.appendChild(purchasePrice);
+
+        const currentPrice = document.createElement('td');
+        currentPrice.textContent = item[3];
+        row.appendChild(currentPrice);
+
+        const date = document.createElement('td');
+        date.textContent = item[5];
+        row.appendChild(date);
+
+        tbody.appendChild(row);
+    });
+}
+
+window.onload = getTransactions;
