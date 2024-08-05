@@ -50,21 +50,19 @@ def get_holdings():
         transaction_type = transaction[1]
         ticker = transaction[2]
         volume = transaction[4]
+        if transaction_type == "SELL":
+            volume = volume * -1
+
         if ticker in holding_amounts.keys():
-            if transaction_type == "BUY":
-                holding_amounts[ticker] += volume
-            elif transaction_type == "SELL":
-                holding_amounts[ticker] -= volume
+            holding_amounts[ticker] += volume
         else:
-            if transaction_type == "BUY":
-                holding_amounts[ticker] = volume
-            elif transaction_type == "SELL":
-                holding_amounts[ticker] = -volume
+            holding_amounts[ticker] = volume
+
     holdings = []
     for ticker in holding_amounts.keys():
         holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker]}
         holdings.append(holding)
-    print(holdings)
+
     return jsonify(holdings)
 
 
