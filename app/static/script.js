@@ -72,9 +72,9 @@ window.onload = function() {
     }
 
    // Async function for getting transactions data
-   async function getTransactions(){
+   async function getHoldings(){
 //   let url = 'https://c4rm9elh30.execute-api.us-east-1.amazonaws.com/default/cachedPriceData?ticker=TSLA'
-    let url = '/api/transactions'
+    let url = '/api/holdings'
 //    let response = await fetch(url).then(res => {
 //        if(!res.ok){
 //        console.error("Backend responded with ${res.status} error");
@@ -115,7 +115,7 @@ async function addTransaction(event) {
        ticker: ticker,
        quantity: parseInt(quantity),
    };
-
+   console.log(transactionData);
    try {
        // send a POST request to the server to add the transaction
        const response = await fetch('/api/addTransaction', {
@@ -125,9 +125,10 @@ async function addTransaction(event) {
            },
            body: JSON.stringify(transactionData)
        });
-
+       console.log("Sent post request to server");
        // Parse the JSON response from the server
        const result = await response.json();
+       console.log("result" + result);
        // check if transaction was successful
        if (response.ok) {
            alert(result.message);
@@ -170,4 +171,4 @@ function displayPortfolio(data) {
     });
 }
 
-window.onload = getTransactions;
+window.onload = getHoldings;
