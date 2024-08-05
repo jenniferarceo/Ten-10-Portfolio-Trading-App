@@ -71,10 +71,10 @@ window.onload = function() {
     
     }
 
-   // Async function for getting Holdings data
-   async function getHoldings(){
+   // Async function for getting transactions data
+   async function getTransactions(){
 //   let url = 'https://c4rm9elh30.execute-api.us-east-1.amazonaws.com/default/cachedPriceData?ticker=TSLA'
-    let url = '/api/holdings'
+    let url = '/api/transactions'
 //    let response = await fetch(url).then(res => {
 //        if(!res.ok){
 //        console.error("Backend responded with ${res.status} error");
@@ -105,7 +105,7 @@ async function addTransaction(event) {
    //prevent the form from submitting the default way
    event.preventDefault();
 
-   const transactiontype = document.getElementByID('transaction-type').value;
+   const transactiontype = document.getElementById('transactionType').value;
    const ticker = document.getElementById('ticker').value;
    const quantity = document.getElementById('quantity').value;
 
@@ -113,12 +113,12 @@ async function addTransaction(event) {
    const transactionData = {
        transactiontype: transactiontype,
        ticker: ticker,
-       quantity: parseInt(quantity)
+       quantity: parseInt(quantity),
    };
 
    try {
        // send a POST request to the server to add the transaction
-       const response = await fetch('/api/add-transaction', {
+       const response = await fetch('/api/addTransaction', {
            method: 'POST',
            headers: {
                'Content-Type':'application/json'
@@ -131,9 +131,9 @@ async function addTransaction(event) {
        // check if transaction was successful
        if (response.ok) {
            alert(result.message);
-           getTransactions(); //this will just reload the transactions page if the transaction was successful
+           getTransactions(); //this will just reload the transactions page if the transaction was successfu
        } else {
-           alert('Error adding transacion: ' + result.message);
+           alert('Error adding transaction: ' + result.message);
        }
    } catch (error) {
        console.error('Error:', error);
@@ -142,10 +142,10 @@ async function addTransaction(event) {
 }
 
 //handle form submission
-document.getElementByID('transaction-Form').addEventListener('submit', addTransaction); //will need to give the html form a form id
+const form = document.getElementById('transaction-form');
+form.addEventListener('submit', addTransaction); //will need to give the html form a form id
 
 // display portfolio
-// Clean-up transactions to have net holdings (i.e buy 100 then sell 50 results in 50 of those stocks at that purchase price left)
 function displayPortfolio(data) {
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = '';
@@ -178,4 +178,4 @@ function displayPortfolio(data) {
     });
 }
 
-window.onload = getHoldings;
+window.onload = getTransactions;
