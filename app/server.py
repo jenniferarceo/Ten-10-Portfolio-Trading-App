@@ -72,14 +72,13 @@ def add_transaction():
     transactiontype = request.json['transactiontype']
     ticker = request.json['ticker']
     quantity = request.json['quantity']
-    # type = request.json['type'] # Buy or Sell
 
     cursor = mydb.cursor()
-    cursor.execute("Select price from Stocks WHERE ticker == %s", ticker)
-    price = cursor.fetchall()
+    cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
+    price = cursor.fetchone()
 
     cursor.execute("INSERT INTO Transactions (transactiontype, ticker, price, quantity) VALUES (%s, %s, %s, %s)",
-                   (transactiontype, ticker, price, quantity))
+                   (transactiontype, ticker, price[0], quantity))
 
     mydb.commit()
     cursor.close()
