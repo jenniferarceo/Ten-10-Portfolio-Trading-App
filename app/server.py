@@ -27,7 +27,7 @@ def get_transactions():
     return jsonify(result)
 
 
-@app.route('/api/add-transaction', methods=['POST'])
+@app.route('/api/addTransaction', methods=['POST'])
 # add a transaction to our database given user inputs from payload
 def add_transaction():
     transactiontype = request.json['transactiontype']
@@ -46,7 +46,7 @@ def add_transaction():
     cursor.close()
     return jsonify({'message': 'Transaction completed successfully'})
 
-@app.route('/api/check-price', methods=['GET'])
+@app.route('/api/checkPrice', methods=['GET'])
 # Checks the price of a stock given a ticker
 def check_stock_price():
     cursor = mydb.cursor()
@@ -68,7 +68,7 @@ def get_stocks():
     cursor.close()
     return jsonify(result)
 
-@app.route('/api/update-stock', methods=['PUT'])
+@app.route('/api/updateStock', methods=['PUT'])
 # Updates the price of (one) stock given ticker
 def update_stocks():
     ticker = request.json['ticker']
