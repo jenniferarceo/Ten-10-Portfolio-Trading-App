@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 import mysql.connector
+from unicodedata import decimal
 
 app = Flask(__name__)
 mydb = mysql.connector.connect(
@@ -38,10 +39,11 @@ def get_holdings():
     stock_prices = {}
     #Convert stocks from list to dictionary
     for stock in stocks:
-        stock_prices[stock[0]] = stock[2]
+        stock_prices[stock[0]] = stock[1]
 
     holding_amounts = {}
     print(stocks)
+    print(stock_prices)
     # Calculates the holding amount for each ticker
     for transaction in transactions:
         # From database: int_key, type, ticker, price, volume, date
