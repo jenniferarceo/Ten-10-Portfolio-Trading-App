@@ -14,7 +14,7 @@
         </form>
 
         <h1>Place New Order</h1>
-        <form action="{{ url_for('add_transaction')}}" method="post">
+        <form id="transactionForm">
                 <label for="ticker" class="form-label">TICKER</label>
                 <input name="ticker" type="text" class="form-control" id="ticker" required>
 
@@ -53,5 +53,6 @@
                 {% endfor %}
             </tbody>
         </table>
+        <script src="../static/script.js"></script>
     </body>
 </html>
