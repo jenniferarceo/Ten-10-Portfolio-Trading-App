@@ -98,7 +98,7 @@ window.onload = function() {
     }
    }
 
-   getTransactions();
+   getHoldings();
 
 //    asynchronous function to add a transaction
 async function addTransaction(event) {
@@ -131,7 +131,7 @@ async function addTransaction(event) {
        // check if transaction was successful
        if (response.ok) {
            alert(result.message);
-           getTransactions(); //this will just reload the transactions page if the transaction was successful
+           getHoldings(); //this will just reload the transactions page if the transaction was successful
        } else {
            alert('Error adding transacion: ' + result.message);
        }
@@ -145,7 +145,6 @@ async function addTransaction(event) {
 document.getElementByID('transaction-Form').addEventListener('submit', addTransaction); //will need to give the html form a form id
 
 // display portfolio
-// Clean-up transactions to have net holdings (i.e buy 100 then sell 50 results in 50 of those stocks at that purchase price left)
 function displayPortfolio(data) {
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = '';
@@ -155,24 +154,16 @@ function displayPortfolio(data) {
 
         // Create and append cells to the row
         const symbol = document.createElement('td');
-        symbol.textContent = item[2];
+        symbol.textContent = item["ticker"];
         row.appendChild(symbol);
 
         const qty = document.createElement('td');
-        qty.textContent = item[4];
+        qty.textContent = item["volume"];
         row.appendChild(qty);
 
-        const purchasePrice = document.createElement('td');
-        purchasePrice.textContent = item[3];
-        row.appendChild(purchasePrice);
-
-        const currentPrice = document.createElement('td');
-        currentPrice.textContent = item[3];
-        row.appendChild(currentPrice);
-
-        const date = document.createElement('td');
-        date.textContent = item[5];
-        row.appendChild(date);
+        const currPrice = document.createElement('td');
+        currPrice.textContent = item["curr_price"];
+        row.appendChild(currPrice);
 
         tbody.appendChild(row);
     });
