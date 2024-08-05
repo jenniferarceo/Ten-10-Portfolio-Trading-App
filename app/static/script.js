@@ -98,3 +98,47 @@ window.onload = function() {
    }
 
    getTransactions();
+
+   //asynchronous function to add a transaction
+async function addTransaction(event) {
+    //prevent the form from submitting the default way
+    event.preventDefault();
+
+    const transactiontype = document.getElementByID('transaction-type').value;
+    const ticker = document.getElementById('ticker').value;
+    const quantity = document.getElementById('quantity').value;
+
+    //prepare the request payload
+    const transactionData = {
+        transactiontype: transactiontype,
+        ticker: ticker,
+        quantity: parseInt(quantity)
+    };
+
+    try {
+        // send a POST request to the server to add the transaction
+        const response = await fetch('/api/add-transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(transactionData)
+        });
+
+        // Parse the JSON response from the server
+        const result = await response.json();
+        // check if transaction was successful
+        if (response.ok) {
+            alert(result.message);
+            //getTransactions(); this will just reload the transactions page if the transaction was successful
+        } else {
+            alert('Error adding transacion: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error adding transaction'); //just display a generic error message after logging the errors to the console
+    }
+}
+
+//handle form submission
+document.getElementByID('transaction-Form').addEventListener('submit', addTransaction); //will need to give the html form a form id
