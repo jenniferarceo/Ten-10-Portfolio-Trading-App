@@ -167,6 +167,7 @@ async function addTransaction(event) {
         if (response.ok) {
             alert(result.message);
             getTransactions(); //this will just reload the transactions page if the transaction was successful
+            getHoldings();
         } else {
             alert('Error adding transaction: ' + result.message);
         }
