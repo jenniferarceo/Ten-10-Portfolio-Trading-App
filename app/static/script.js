@@ -100,7 +100,7 @@ function PieChart() {
         displayPortfolio(result);
 //        return result;
     }else{
-        alert("Error getting transactions: " + result.message);
+        alert("Error getting holdings: " + result.message);
         return null;
     }
    }
@@ -143,6 +143,16 @@ async function addTransaction(event) {
     const ticker = document.getElementById('ticker').value;
     const quantity = document.getElementById('quantity').value;
 
+    //check  if is ticker is alphabetic and quantity is a positive integer
+     if (!ticker.match(/^[a-zA-Z]+$/)) {
+        alert("Ticker must only contain alphabetic characters. ");
+        return;
+     }
+     if (!(Number.isInteger(Number(quantity)) && Number(quantity) > 0)) {
+        alert("Quantity must be a positive whole number.");
+        return
+     }
+
     //prepare the request payload
     const transactionData = {
         transactiontype: transactiontype,
@@ -170,11 +180,11 @@ async function addTransaction(event) {
             //getHoldings();
             updateTable();
         } else {
-            alert('Error adding transaction: ' + result.message);
+            alert('Error adding transaction: ' + result.error);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error adding transaction'); //just display a generic error message after logging the errors to the console
+        alert('Error adding transaction'+ error.message); //just display a generic error message after logging the errors to the console
     }
  }
 
