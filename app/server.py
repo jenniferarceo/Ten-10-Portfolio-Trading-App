@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request, render_template
 import mysql.connector
+
 from unicodedata import decimal
 
 app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="c0nygre",
+    password="12345678!",
     database="Portfolio"
 )
 
@@ -15,17 +16,7 @@ def start_page():
     # start up our page. Maybe call our javascript to render stuff ** CHECK
     return render_template("home.html")
 
-@app.route('/api/transactions', methods=['GET'])
-# Get the json list of transactions from our database
-def get_transactions():
-    cursor = mydb.cursor()
 
-    cursor.execute("Select * from Transactions")
-    result = cursor.fetchall()
-
-    cursor.close()
-    #return jsonify(result)
-    return jsonify(result)
 
 @app.route('/api/holdings', methods=['GET'])
 # Get the json list of transactions from our database
@@ -65,6 +56,17 @@ def get_holdings():
 
     return jsonify(holdings)
 
+@app.route('/api/transactions', methods=['GET'])
+# Get the json list of transactions from our database
+def get_transactions():
+    cursor = mydb.cursor()
+
+    cursor.execute("Select * from Transactions")
+    result = cursor.fetchall()
+
+    cursor.close()
+    #return jsonify(result)
+    return jsonify(result)
 
 @app.route('/api/addTransaction', methods=['POST'])
 # add a transaction to our database given user inputs from payload
