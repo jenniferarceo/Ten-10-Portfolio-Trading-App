@@ -91,7 +91,7 @@ def add_transaction():
 def check_stock_price():
     cursor = mydb.cursor()
     ticker = request.json['ticker']
-    cursor.execute("Select price from Stocks where ticker == %s", ticker)
+    cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
     result = cursor.fetchall()
 
     cursor.close()

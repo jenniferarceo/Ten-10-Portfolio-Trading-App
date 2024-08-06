@@ -29,6 +29,11 @@ h3 {
     background-color: #F4F4F4;
 }
 
+.transactions-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
 #linegraph-container {
     background-color: #F4F4F4;
 }

@@ -208,7 +208,7 @@ async function addTransaction(event) {
             alert('Server returned invalid JSON');
         }
     } catch (error) {
-        console.error('Error fecting transactions:', error);
+        console.error('Error fetching transactions:', error);
         alert('Error fetching transactions');
     }
  }
@@ -217,7 +217,9 @@ function displayTransactions(transactions) {
     const transactionsTableBody = document.getElementById('transactions-table-body');
     transactionsTableBody.innerHTML = ''; //clear existing table data
 
-    transactions.forEach(transaction => {
+    const descendingTransactions = transactions.slice().reverse();
+
+    descendingTransactions.forEach(transaction => {
         const row = document.createElement('tr');
         row.innerHTML = `
         <td>${transaction[2]}</td>
