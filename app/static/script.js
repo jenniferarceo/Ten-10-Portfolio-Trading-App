@@ -105,7 +105,7 @@ function PieChart() {
     }
    }
 
-   getHoldings();
+   //getHoldings();
 
 // display portfolio
 function displayPortfolio(data) {
@@ -166,8 +166,9 @@ async function addTransaction(event) {
         // check if transaction was successful
         if (response.ok) {
             alert(result.message);
-            getTransactions(); //this will just reload the transactions page if the transaction was successful
-            getHoldings();
+            //getTransactions(); //this will just reload the transactions page if the transaction was successful
+            //getHoldings();
+            updateTable();
         } else {
             alert('Error adding transaction: ' + result.message);
         }
@@ -227,6 +228,11 @@ function displayTransactions(transactions) {
         `;
         transactionsTableBody.appendChild(row);
     });
+}
+
+async function updateTable() {
+    await getTransactions();
+    await getHoldings();
 }
 
  //handle form submission
