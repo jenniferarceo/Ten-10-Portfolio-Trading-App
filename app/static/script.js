@@ -93,7 +93,7 @@ window.onload = function() {
         displayPortfolio(result);
 //        return result;
     }else{
-        alert("Error getting transactions: " + result.message);
+        alert("Error getting holdings: " + result.message);
         return null;
     }
    }
