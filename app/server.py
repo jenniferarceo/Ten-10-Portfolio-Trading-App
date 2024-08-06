@@ -7,7 +7,7 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="12345678!",
+    password="c0nygre",
     database="Portfolio"
 )
 
@@ -93,7 +93,7 @@ def add_transaction():
         return {'error': "Not enough holdings to sell"}, 404
 
     cursor.execute("INSERT INTO Transactions (transactiontype, ticker, price, quantity) VALUES (%s, %s, %s, %s)",
-                   (transactiontype, ticker, price[0], quantity))
+                   (transactiontype, ticker, price, quantity))
 
     mydb.commit()
     cursor.close()
