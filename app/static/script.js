@@ -98,8 +98,6 @@ window.onload = function() {
     }
    }
 
-   getHoldings();
-
 // asynchronous function to add a transaction
 async function addTransaction(event) {
    //prevent the form from submitting the default way
