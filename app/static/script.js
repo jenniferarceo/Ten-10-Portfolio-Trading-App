@@ -1,5 +1,12 @@
 //live line graph
-window.onload = function () {
+window.addEventListener('load', function() {
+    getHoldings();
+    LiveLineGraph();
+    PieChart();
+    getTransactions();
+});
+
+function LiveLineGraph() {
 
     var dps = []; // dataPoints
     var chart = new CanvasJS.Chart("chartContainer1", {
@@ -43,7 +50,7 @@ window.onload = function () {
     }
 
 // pie graph
-window.onload = function() {
+function PieChart() {
 
     var chart = new CanvasJS.Chart("chartContainer2", {
         theme: "light2", // "light1", "light2", "dark1", "dark2"
@@ -98,49 +105,7 @@ window.onload = function() {
     }
    }
 
-// asynchronous function to add a transaction
-async function addTransaction(event) {
-   //prevent the form from submitting the default way
-   event.preventDefault();
-
-   const transactiontype = document.getElementById('transactionType').value;
-   const ticker = document.getElementById('ticker').value;
-   const quantity = document.getElementById('quantity').value;
-
-   try {
-       // send a POST request to the server to add the transaction
-       const response = await fetch('/api/addTransaction', {
-           method: 'POST',
-           headers: {
-               'Content-Type':'application/json'
-           },
-           body: JSON.stringify({
-                transactiontype: transactiontype,
-                ticker: ticker,
-                quantity: quantity
-           })
-       });
-       console.log("Sent post request to server");
-
-       // parse the JSON response from the server
-       const result = await response.json();
-
-       // check if transaction was successful
-       if (response.ok) {
-           alert(result.message);
-           getHoldings(); // this will just reload the transactions page if the transaction was successful
-       } else {
-           alert('Error adding transaction: ' + result.message);
-       }
-   } catch (error) {
-       console.error('Error:', error);
-       alert('Error adding transaction'); // just display a generic error message after logging the errors to the console
-   }
-}
-
-// handle form submission
-const form = document.getElementById('transaction-form');
-form.addEventListener('submit', addTransaction);
+   getHoldings();
 
 // display portfolio
 function displayPortfolio(data) {
@@ -167,4 +132,103 @@ function displayPortfolio(data) {
     });
 }
 
-window.onload = getHoldings;
+//window.onload = getHoldings;
+
+//    asynchronous function to add a transaction
+async function addTransaction(event) {
+    //prevent the form from submitting the default way
+    event.preventDefault();
+
+    const transactiontype = document.getElementById('transactionType').value;
+    const ticker = document.getElementById('ticker').value;
+    const quantity = document.getElementById('quantity').value;
+
+    //prepare the request payload
+    const transactionData = {
+        transactiontype: transactiontype,
+        ticker: ticker,
+        quantity: parseInt(quantity),
+    };
+    console.log(transactionData);
+    try {
+        // send a POST request to the server to add the transaction
+        const response = await fetch('/api/addTransaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(transactionData)
+        });
+        console.log("Sent post request to server");
+        // Parse the JSON response from the server
+        const result = await response.json();
+        console.log("result: " , result);
+        // check if transaction was successful
+        if (response.ok) {
+            alert(result.message);
+            getTransactions(); //this will just reload the transactions page if the transaction was successful
+            getHoldings();
+        } else {
+            alert('Error adding transaction: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error adding transaction'); //just display a generic error message after logging the errors to the console
+    }
+ }
+
+ // get all transactions
+ async function getTransactions() {
+    try {
+        //request to fetch transactions
+        const response = await fetch('/api/transactions', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+
+        const text = await response.text();
+        console.log("Raw response text:", text);
+
+        try {
+            //parse the json response
+            //const transactions = await response.json();
+            const transactions = JSON.parse(text); //manually parse the text to JSON
+            console.log("Fetched transactions: ", transactions);
+            displayTransactions(transactions);
+        } catch (e) {
+            console.error('failed to parse JSON:', e);
+            alert('Server returned invalid JSON');
+        }
+    } catch (error) {
+        console.error('Error fecting transactions:', error);
+        alert('Error fetching transactions');
+    }
+ }
+//display transactions
+function displayTransactions(transactions) {
+    const transactionsTableBody = document.getElementById('transactions-table-body');
+    transactionsTableBody.innerHTML = ''; //clear existing table data
+
+    transactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td>${transaction[2]}</td>
+        <td>${transaction[1]}</td>
+        <td>${transaction[3]}</td>
+        <td>${transaction[4]}</td>
+        <td>${transaction[5]}</td>
+        `;
+        transactionsTableBody.appendChild(row);
+    });
+}
+
+ //handle form submission
+ const form = document.getElementById('transaction-form');
+ form.addEventListener('submit', addTransaction);
