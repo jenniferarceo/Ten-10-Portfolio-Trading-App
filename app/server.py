@@ -75,7 +75,7 @@ def add_transaction():
     ticker = request.json['ticker']
     quantity = request.json['quantity']
 
-    cursor = mydb.cursor()
+    cursor = mydb.cursor(buffered=True)
     cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
     price = cursor.fetchone()
 

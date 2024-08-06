@@ -105,7 +105,7 @@ function PieChart() {
     }
    }
 
-   getHoldings();
+   //getHoldings();
 
 // display portfolio
 function displayPortfolio(data) {
@@ -166,7 +166,9 @@ async function addTransaction(event) {
         // check if transaction was successful
         if (response.ok) {
             alert(result.message);
-            updateTables();
+            //getTransactions(); //this will just reload the transactions page if the transaction was successful
+            //getHoldings();
+            updateTable();
         } else {
             alert('Error adding transaction: ' + result.message);
         }
@@ -228,11 +230,11 @@ function displayTransactions(transactions) {
     });
 }
 
+async function updateTable() {
+    await getTransactions();
+    await getHoldings();
+}
+
  //handle form submission
  const form = document.getElementById('transaction-form');
  form.addEventListener('submit', addTransaction);
-
-function updateTables(){
-    getTransactions(); //this will just reload the transactions page if the transaction was successful
-    getHoldings();
-}
