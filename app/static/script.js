@@ -166,8 +166,7 @@ async function addTransaction(event) {
         // check if transaction was successful
         if (response.ok) {
             alert(result.message);
-            getTransactions(); //this will just reload the transactions page if the transaction was successful
-            getHoldings();
+            updateTables();
         } else {
             alert('Error adding transaction: ' + result.message);
         }
@@ -232,3 +231,8 @@ function displayTransactions(transactions) {
  //handle form submission
  const form = document.getElementById('transaction-form');
  form.addEventListener('submit', addTransaction);
+
+function updateTables(){
+    getTransactions(); //this will just reload the transactions page if the transaction was successful
+    getHoldings();
+}

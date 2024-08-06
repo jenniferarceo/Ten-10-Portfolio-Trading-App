@@ -21,12 +21,12 @@ def start_page():
 @app.route('/api/holdings', methods=['GET'])
 # Get the json list of transactions from our database
 def get_holdings():
-    cursor = mydb.cursor()
-    cursor.execute("Select * from Transactions")
-    transactions = cursor.fetchall()
-    cursor.execute("Select * from Stocks")
-    stocks = cursor.fetchall()
-    cursor.close()
+    cursor2 = mydb.cursor()
+    cursor2.execute("Select * from Transactions")
+    transactions = cursor2.fetchall()
+    cursor2.execute("Select * from Stocks")
+    stocks = cursor2.fetchall()
+    cursor2.close()
     stock_prices = {}
     #Convert stocks from list to dictionary
     for stock in stocks:
@@ -59,12 +59,12 @@ def get_holdings():
 @app.route('/api/transactions', methods=['GET'])
 # Get the json list of transactions from our database
 def get_transactions():
-    cursor = mydb.cursor()
+    cursor1 = mydb.cursor()
 
-    cursor.execute("Select * from Transactions")
-    result = cursor.fetchall()
+    cursor1.execute("Select * from Transactions")
+    result = cursor1.fetchall()
 
-    cursor.close()
+    cursor1.close()
     #return jsonify(result)
     return jsonify(result)
 
