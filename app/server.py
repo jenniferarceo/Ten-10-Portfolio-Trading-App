@@ -11,16 +11,7 @@ mydb = mysql.connector.connect(
     database="Portfolio"
 )
 
-@app.route('/', methods=['GET'])
-def start_page():
-    # start up our page. Maybe call our javascript to render stuff ** CHECK
-    return render_template("home.html")
-
-
-
-@app.route('/api/holdings', methods=['GET'])
-# Get the json list of transactions from our database
-def get_holdings():
+def calculate_holdings():
     cursor2 = mydb.cursor()
     cursor2.execute("Select * from Transactions")
     transactions = cursor2.fetchall()
@@ -28,7 +19,7 @@ def get_holdings():
     stocks = cursor2.fetchall()
     cursor2.close()
     stock_prices = {}
-    #Convert stocks from list to dictionary
+    # Convert stocks from list to dictionary
     for stock in stocks:
         stock_prices[stock[0]] = stock[1]
 
@@ -48,12 +39,23 @@ def get_holdings():
             holding_amounts[ticker] += volume
         else:
             holding_amounts[ticker] = volume
+    return holding_amounts, stock_prices
 
+@app.route('/', methods=['GET'])
+def start_page():
+    # start up our page. Maybe call our javascript to render stuff ** CHECK
+    return render_template("home.html")
+
+
+
+@app.route('/api/holdings', methods=['GET'])
+# Get the json list of transactions from our database
+def get_holdings():
     holdings = []
+    holding_amounts, stock_prices = calculate_holdings()
     for ticker in holding_amounts.keys():
         holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker]}
         holdings.append(holding)
-
     return jsonify(holdings)
 
 @app.route('/api/transactions', methods=['GET'])
@@ -76,8 +78,19 @@ def add_transaction():
     quantity = request.json['quantity']
 
     cursor = mydb.cursor(buffered=True)
-    cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
-    price = cursor.fetchone()
+    holdings, stock_prices = calculate_holdings()
+    # cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
+    # price = cursor.fetchone()
+
+    if ticker in stock_prices.keys():
+        price = stock_prices[ticker]
+    else:
+        cursor.close()
+        return {'error': "Ticker not available"}, 404
+
+    if transactiontype == "SELL" and holdings[ticker] < quantity:
+        cursor.close()
+        return {'error': "Not enough holdings to sell"}, 404
 
     cursor.execute("INSERT INTO Transactions (transactiontype, ticker, price, quantity) VALUES (%s, %s, %s, %s)",
                    (transactiontype, ticker, price[0], quantity))

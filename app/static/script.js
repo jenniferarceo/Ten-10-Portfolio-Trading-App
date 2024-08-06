@@ -170,11 +170,11 @@ async function addTransaction(event) {
             //getHoldings();
             updateTable();
         } else {
-            alert('Error adding transaction: ' + result.message);
+            alert('Error adding transaction: ' + result.error);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error adding transaction'); //just display a generic error message after logging the errors to the console
+        alert('Error adding transaction'+ error.message); //just display a generic error message after logging the errors to the console
     }
  }
 
