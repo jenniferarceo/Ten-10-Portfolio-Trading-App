@@ -143,6 +143,16 @@ async function addTransaction(event) {
     const ticker = document.getElementById('ticker').value;
     const quantity = document.getElementById('quantity').value;
 
+    //check  if is ticker is alphabetic and quantity is a positive integer
+     if (!ticker.match(/^[a-zA-Z]+$/)) {
+        alert("Ticker must only contain alphabetic characters. ");
+        return;
+     }
+     if (!(Number.isInteger(Number(quantity)) && Number(quantity) > 0)) {
+        alert("Quantity must be a positive whole number.");
+        return
+     }
+
     //prepare the request payload
     const transactionData = {
         transactiontype: transactiontype,
