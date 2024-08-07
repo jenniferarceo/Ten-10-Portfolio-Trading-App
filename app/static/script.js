@@ -94,6 +94,26 @@ function PieChart(data) {
     });
     chart.render();
 }
+
+function displayPerformance(data) {
+    // calculate total unrealized value
+    let unrealizedVal = 0;
+    for (const item in data) {
+        currItem = data[item];
+        unrealizedVal += parseInt(currItem["unrealized_pnl"]);
+        console.log(unrealizedVal);
+    }
+    document.getElementById("todaysChange").textContent = unrealizedVal;
+
+    // calculate total portfolio value
+    let accountValue = 0;
+    for (const item in data) {
+        currItem = data[item];
+        let value = currItem["volume"] * parseInt(currItem["curr_price"]);
+        accountValue += value;
+    }
+    document.getElementById("accountValue").textContent = accountValue;
+}
     
 // Async function for getting transactions data
 async function getHoldings(){
@@ -105,7 +125,8 @@ if (response.ok){
     console.log(result);
     holdings = result;
     displayPortfolio(result);
-    await PieChart(holdings);
+    PieChart(holdings);
+    displayPerformance(holdings);
 }else{
     alert("Error getting holdings: " + result.message);
     return null;
