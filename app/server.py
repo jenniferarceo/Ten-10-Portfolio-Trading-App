@@ -30,6 +30,7 @@ def calculate_holdings():
 
     holding_amounts = {}
     holding_realized_pnls = {}
+    holding_unrealized_pnls = {}
     # Calculates the holding amount for each ticker
     for transaction in transactions:
         # From database: int_key, type, ticker, price, volume, date
@@ -48,7 +49,11 @@ def calculate_holdings():
             holding_amounts[ticker] = volume
             holding_realized_pnls[ticker] = volume * -1 * purchase_price
 
-    return holding_amounts, stock_prices, holding_realized_pnls
+        #transaction[4] is volume as positive number always
+    for ticker in holding_amounts.keys():
+        holding_unrealized_pnls[ticker] = holding_amounts[ticker] * stock_prices[ticker] + holding_realized_pnls[ticker]
+
+    return holding_amounts, stock_prices, holding_realized_pnls, holding_unrealized_pnls
 
 @app.route('/', methods=['GET'])
 def start_page():
@@ -69,7 +74,7 @@ def get_current_data(tickers):
                 'Current Price': current_price,
                 #'Volume': volume
             }
-            print(f"Ticker: {ticker}, Current Price: {current_price}") #, Volume: {volume}
+            #print(f"Ticker: {ticker}, Current Price: {current_price}") #, Volume: {volume}
     return data
 
 #list of tickers to track
@@ -81,21 +86,22 @@ tickers = [
     "DIS", "VZ", "HON", "ABT", "SCHW", "PM", "IBM", "QCOM", "ACN", "LMT",
     "AMD", "AMT", "CHTR", "CAT", "ELV", "BLK", "DE", "NE", "INTU", "MU"
     ]
-try: 
-    while True:
-        #fetch and display the data every 5 seconds
-        current_data = get_current_data(tickers)
-        time.sleep(5)
-except KeyboardInterrupt:
-    print("Data retrieval stopped by user.")
+# try:
+#     while True:
+#         #fetch and display the data every 5 seconds
+#         current_data = get_current_data(tickers)
+#         time.sleep(5)
+# except KeyboardInterrupt:
+#     print("Data retrieval stopped by user.")
 
 @app.route('/api/holdings', methods=['GET'])
 # Get the json list of transactions from our database
 def get_holdings():
     holdings = []
-    holding_amounts, stock_prices, holding_realized_pnls = calculate_holdings()
+    holding_amounts, stock_prices, holding_realized_pnls, holding_unrealized_pnls = calculate_holdings()
     for ticker in holding_amounts.keys():
-        holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker], "realized_pnl": holding_realized_pnls[ticker]}
+        holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker],\
+                   "realized_pnl": holding_realized_pnls[ticker], "unrealized_pnl" : holding_unrealized_pnls[ticker]}
         holdings.append(holding)
     return jsonify(holdings)
 
@@ -118,7 +124,7 @@ def add_transaction():
     quantity = request.json['quantity']
 
     cursor = mydb.cursor(buffered=True)
-    holdings, stock_prices, holding_realized_pnls = calculate_holdings()
+    holdings, stock_prices, holding_realized_pnls, holding_unrealized_pnls = calculate_holdings()
     # cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
     # price = cursor.fetchone()
 
@@ -142,13 +148,14 @@ def add_transaction():
 @app.route('/api/checkPrice/<string:ticker>', methods=['GET'])
 # Checks the price of a stock given a ticker
 def check_stock_price(ticker):
-    cursor = mydb.cursor()
-    cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
-    price = cursor.fetchone()
-    cursor.close()
-
+    # cursor = mydb.cursor()
+    # cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
+    # price = cursor.fetchone()
+    # cursor.close()
+    price = current_data[ticker]['Current Price']
+    print(price)
     if price:
-        return jsonify(price[0])
+        return jsonify(price)
     else:
         return jsonify({'error': 'Price not found'}), 404
 
