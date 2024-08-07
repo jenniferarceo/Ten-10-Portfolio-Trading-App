@@ -67,7 +67,6 @@ def get_transactions():
     result = cursor1.fetchall()
 
     cursor1.close()
-    #return jsonify(result)
     return jsonify(result)
 
 @app.route('/api/addTransaction', methods=['POST'])
@@ -99,16 +98,18 @@ def add_transaction():
     cursor.close()
     return jsonify({'message': 'Transaction completed successfully'})
 
-@app.route('/api/checkPrice', methods=['GET'])
+@app.route('/api/checkPrice/<string:ticker>', methods=['GET'])
 # Checks the price of a stock given a ticker
-def check_stock_price():
+def check_stock_price(ticker):
     cursor = mydb.cursor()
-    ticker = request.json['ticker']
     cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
-    result = cursor.fetchall()
-
+    price = cursor.fetchone()
     cursor.close()
-    return jsonify(result)
+
+    if price:
+        return jsonify(price[0])
+    else:
+        return jsonify({'error': 'Price not found'}), 404
 
 @app.route('/api/stocks', methods=['GET'])
 # Gets the list of stocks from our database
@@ -131,20 +132,6 @@ def update_stocks():
     mydb.commit()
     cursor.close()
     return jsonify({'message': 'Stocks updated successfully'})
-
-# PORTFOLIO TABLE
-# - get all items
-# - add entries
-#
-# STOCKS TABLE
-# - get all items
-# - update items (current price from api)
-
-#test to see if it can also update the tables
-# mycursor.execute('''INSERT INTO Transactions(transactiontype, ticker, price, quantity)
-# VALUES('BUY', 'NVDA', 110.00, 500)''')
-# mydb.commit()
-# print(mycursor.rowcount, "records inserted.")
 
 if __name__ == '__main__':
     app.run()

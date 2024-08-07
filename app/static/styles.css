@@ -25,15 +25,74 @@ h3 {
     background-color: #F4F4F4;
 }
 
+.btn-primary {
+    background-color: #65558F; /* New background color */
+    border-color: #65558F; /* New border color */
+}
+
+.btn-primary:hover {
+    background-color: #514573; /* New hover background color */
+    border-color: #514573; /* New hover border color */
+}
+
 .tab-content {
     background-color: #F4F4F4;
 }
 
-.transactions-container {
-    max-height: 400px;
-    overflow-y: auto;
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
+thead, tbody {
+    display: block;
+}
+
+.transactions-container thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding-right: 12px;
+    border: none;
+}
+
+tbody {
+    overflow-y: auto;
+    overflow-x: hidden; 
+}
+
+#transactions-table-body {
+    max-height: 400px;
+}
+
+tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; 
+}
+
+/* Scrollbar */
+#transactions-table-body::-webkit-scrollbar {
+    width: 12px;
+    height: 12px; 
+}
+  
+#transactions-table-body::-webkit-scrollbar-track {
+    background: #F4F4F4;
+}
+  
+#transactions-table-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+    min-height: 35px;
+}
+  
+#transactions-table-body::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+/* Graphs */
 #linegraph-container {
     background-color: #F4F4F4;
 }

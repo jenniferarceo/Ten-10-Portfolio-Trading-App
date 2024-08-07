@@ -98,14 +98,11 @@ function PieChart() {
         console.log("Successfully got Data");
         console.log(result);
         displayPortfolio(result);
-//        return result;
     }else{
         alert("Error getting holdings: " + result.message);
         return null;
     }
    }
-
-   //getHoldings();
 
 // display portfolio
 function displayPortfolio(data) {
@@ -132,9 +129,7 @@ function displayPortfolio(data) {
     });
 }
 
-//window.onload = getHoldings;
-
-//    asynchronous function to add a transaction
+// asynchronous function to add a transaction
 async function addTransaction(event) {
     //prevent the form from submitting the default way
     event.preventDefault();
@@ -176,8 +171,6 @@ async function addTransaction(event) {
         // check if transaction was successful
         if (response.ok) {
             alert(result.message);
-            //getTransactions(); //this will just reload the transactions page if the transaction was successful
-            //getHoldings();
             updateTable();
         } else {
             alert('Error adding transaction: ' + result.error);
@@ -200,7 +193,7 @@ async function addTransaction(event) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
 
@@ -208,13 +201,11 @@ async function addTransaction(event) {
         console.log("Raw response text:", text);
 
         try {
-            //parse the json response
-            //const transactions = await response.json();
             const transactions = JSON.parse(text); //manually parse the text to JSON
             console.log("Fetched transactions: ", transactions);
             displayTransactions(transactions);
         } catch (e) {
-            console.error('failed to parse JSON:', e);
+            console.error('Failed to parse JSON:', e);
             alert('Server returned invalid JSON');
         }
     } catch (error) {
@@ -242,11 +233,54 @@ function displayTransactions(transactions) {
     });
 }
 
+// update transactions and holdings table
 async function updateTable() {
     await getTransactions();
     await getHoldings();
 }
 
- //handle form submission
- const form = document.getElementById('transaction-form');
- form.addEventListener('submit', addTransaction);
+ // handle form submission
+ const form = document.getElementById('orderButton');
+ form.addEventListener('click', addTransaction);
+
+ // get stock price
+ async function getStockPrice() {
+    const ticker = document.getElementById('ticker').value;
+    
+    try {
+        // request to fetch stock price
+        const response = await fetch('/api/checkPrice/' + ticker, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        console.log("Raw response text:", text);
+
+        try {
+            const stockPrice = JSON.parse(text); // manually parse the text to JSON
+            console.log("Fetched stock price: ", stockPrice);
+            displayStockPrice(stockPrice);
+        } catch (e) {
+            console.error('Failed to parse JSON:', e);
+            alert('Server returned invalid JSON');
+        }
+    } catch (error) {
+        console.error('Error fetching stock price:', error);
+        alert('Error fetching stock price');
+    }
+ }
+
+ function displayStockPrice(stock) {
+    const currPrice = document.getElementById('currPrice');
+    currPrice.textContent = "$" + `${stock}`;
+ }
+
+ const price = document.getElementById('checkPrice');
+ price.addEventListener('click', getStockPrice);

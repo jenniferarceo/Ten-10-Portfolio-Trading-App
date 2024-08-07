@@ -21,64 +21,28 @@
         <div class="col-sm-8 p-3">
           <!-- Ticker Form -->
           <div class="col mb-4 p-3" id="form">
-            <!-- <form id="transaction-form" action="{{ url_for('add_transaction')}}" method="post">
-              
-              <div class="row align-items-center">
-                <div class="col-sm-1">
-                  <label for="ticker1" class="form-label">TICKER</label>
-                </div>
-                <div class="col-sm-8">
-                  <input name="ticker" type="text" class="form-control" id="ticker1" required>
-                </div>
-                <div class="col-sm-1">
-                  <button type="submit" class="btn btn-primary">CHECK PRICE</button>
-                </div>
-              </div>
-              
-              <div class="row">
-                <div class="col-sm-3">
-                  <h3 id = "priceCheck">CURRENT PRICE</h3> 
-                </div>
-                
-                <div class="col-sm-3">
-                  <label for="transactionType" class="form-label">TRANSACTION TYPE</label>
-                  <select name="transaction-type" id="transactionType" required>
-                      <option value="SELL">BUY</option>
-                      <option value="SELL">SELL</option>
-                  </select>
-                </div>
-
-                <div class="col-sm-3">
-                  <label for="quantity" class="form-label">QUANTITY</label>
-                  <input name="quantity" type="number" class="form-control" id="quantity" required>
-                </div>
-
-                <button type="reset" class="btn btn-primary">CLEAR</button>
-                <button type="submit" class="btn btn-primary">ORDER</button>
-              </div>
-              
-            </form> -->
-            <!-- <h1>Check Price</h1>
-            <form action="{{ url_for('check_stock_price')}}" method="post">
-                    <label for="ticker1" class="form-label">TICKER</label>
-                    <input name="ticker" type="text" class="form-control" id="ticker1" required>
-                    <h3 id = "priceCheck">PRICE SHOWS UP HERE</h3>
-                    <button type="submit" class="btn btn-primary">CHECK PRICE</button>
-            </form> -->
-
             <h2>PLACE NEW ORDER</h2>
             <form id="transaction-form" method="post">
               <div class="row align-items-center">
                 <div class="col-sm-2">
                   <label for="ticker" class="form-label"><strong>TICKER</strong></label>
                 </div>
-                <div class="col-sm-8 p-3">
+                <div class="col-sm-7 p-3">
                   <input name="ticker" type="text" class="form-control" id="ticker" required>
+                </div>
+                <div class="col-sm-3">
+                  <button type="submit" id="checkPrice" class="btn btn-primary">CHECK PRICE</button>
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-sm-4">
+              <div class="row pb-3 pt-3" id="stockInputs">
+                <div class="col-sm-3">
+                  <label><strong>CURRENT PRICE</strong></label>
+                  <div id="currPrice">---</div>
+                </div>
+
+
+                <div class="col-sm-3">
                   <label for="transactionType" class="form-label"><strong>TRANSACTION TYPE</strong></label>
                   <select name="transaction-type" id="transactionType" required>
                       <option value="BUY">BUY</option>
@@ -86,13 +50,18 @@
                   </select>
                 </div>
 
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                   <label for="quantity" class="form-label"><strong>QUANTITY</strong></label>
-                  <input name="quantity" type="number" class="form-control" id="quantity" style="width: 150px;" required>
+                  <input name="quantity" type="number" class="form-control" id="quantity" required>
                 </div>
 
-                <button type="reset" class="btn btn-primary m-2" style="height: 50px;">CLEAR</button>
-                <button type="submit" class="btn btn-primary m-2" style="height: 50px;">ORDER</button>
+                <div class="col-sm-2 d-flex justify-content-end p-2">
+                  <button type="reset" class="btn btn-primary" style="height: 50px;">CLEAR</button>
+                </div>
+                
+                <div class="col-sm-2 d-flex justify-content-start p-2">
+                  <button type="submit" id="orderButton" class="btn btn-primary" style="height: 50px;">ORDER</button>
+                </div>
               </div>
             </form>
           </div>
@@ -102,7 +71,7 @@
             <!-- Tabs -->
             <ul class="nav nav-tabs">
               <li class="nav-item">
-                <a class="nav-link active" href="#tab1" data-bs-toggle="tab"><strong>HOLDINGS</strong></a>
+                <a class="nav-link active" href="#tab1" data-bs-toggle="tab" style="font-size: 20px;"><strong>HOLDINGS</strong></a>
               </li>
             </ul>
 
@@ -128,23 +97,22 @@
                 <!-- Transaction -->
                 <h2 class="col-sm-12 mb-3 mt-5">TRANSACTIONS</h2>
                 
-                <div>
-                  <div class="transactions-container">
-                    <table class = "table table-striped">
-                      <thead>
-                        <tr>
-                          <th>SYMBOL</th>
-                          <th>TYPE</th>
-                          <th>PRICE</th>
-                          <th>QUANTITY</th>
-                          <th>TRANSACTION DATE</th>
-                        </tr>
-                      </thead>
-                      <tbody id="transactions-table-body">
-                        <!--INSERT DATA -->
-                      </tbody>
-                    </table>
-                  </div>
+                <div id="temp"></div>
+                <div class="transactions-container">
+                  <table class="table table-striped">
+                    <thead id="thead">
+                      <tr>
+                        <th>SYMBOL</th>
+                        <th>TYPE</th>
+                        <th>PRICE</th>
+                        <th>QUANTITY</th>
+                        <th>TRANSACTION DATE</th>
+                      </tr>
+                    </thead>
+                    <tbody id="transactions-table-body">
+                      <!--INSERT DATA -->
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
