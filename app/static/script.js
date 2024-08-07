@@ -1,13 +1,12 @@
-//live line graph
 window.addEventListener('load', function() {
     getHoldings();
     LiveLineGraph();
-    PieChart();
     getTransactions();
 });
 
 var holdings;
 
+//live line graph
 function LiveLineGraph() {
 
     var dps = []; // dataPoints
