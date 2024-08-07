@@ -50,11 +50,21 @@ function LiveLineGraph() {
     }
 
 // pie graph
-function PieChart() {
+function PieChart(data) {
+    let portfolio = [];
+    for (const item in data) {
+        let value = item["volume"] * parseInt(item["curr_price"]);
+        let ticker = item["ticker"];
+        portfolio.push([value, ticker]);
+    }
+
+    for (const item in portfolio) {
+        console.log(item)
+    }
 
     var chart = new CanvasJS.Chart("chartContainer2", {
         theme: "light2", // "light1", "light2", "dark1", "dark2"
-        exportEnabled: true,
+        exportEnabled: false,
         animationEnabled: true,
         title: {
             text: ""
@@ -65,19 +75,19 @@ function PieChart() {
             toolTipContent: "<b>{label}</b>: {y}%",
             showInLegend: "true",
             legendText: "{label}",
-            indexLabelFontSize: 16,
+            indexLabelFontSize: 12,
             indexLabel: "{label} - {y}%",
             dataPoints: [
-                { y: 51.08, label: "Chrome" },
-                { y: 27.34, label: "Internet Explorer" },
-                { y: 10.62, label: "Firefox" },
+                { y: portfolio[0][0], label: portfolio[0][1] },
+                { y: portfolio[1][0], label: portfolio[1][1] },
+                { y: portfolio[2][0], label: portfolio[2][1] },
+                
             ]
         }]
     });
     chart.render();
+}
     
-    }
-
    // Async function for getting transactions data
    async function getHoldings(){
 //   let url = 'https://c4rm9elh30.execute-api.us-east-1.amazonaws.com/default/cachedPriceData?ticker=TSLA'
@@ -98,6 +108,7 @@ function PieChart() {
         console.log("Successfully got Data");
         console.log(result);
         displayPortfolio(result);
+        PieChart(result);
     }else{
         alert("Error getting holdings: " + result.message);
         return null;
@@ -284,3 +295,10 @@ async function updateTable() {
 
  const price = document.getElementById('checkPrice');
  price.addEventListener('click', getStockPrice);
+
+ // clear current price value when the form is cleared
+ const clearPrice = document.getElementById('clearButton')
+ clearPrice.addEventListener('click', () => {
+    const currPrice = document.getElementById('currPrice');
+    currPrice.textContent = "---";
+ })
