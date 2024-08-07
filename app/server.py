@@ -1,5 +1,10 @@
 from flask import Flask, jsonify, request, render_template
 import mysql.connector
+import time
+from datetime import datetime
+import numpy as np
+import pandas as pd
+import yfinance as yf
 
 from unicodedata import decimal
 
@@ -46,7 +51,39 @@ def start_page():
     # start up our page. Maybe call our javascript to render stuff ** CHECK
     return render_template("home.html")
 
+# update the current price every five seconds
+#@app.route('/api/currentdata', methods=['GET'])
+def get_current_data(tickers):
+    data = {}
+    for ticker in tickers:
+        stock = yf.Ticker(ticker)
+        info = stock.history(period="1d", interval="1m")
+        if not info.empty:
+            current_price = info.iloc[-1]['Close']
+            #volume = info.iloc[-1]['Volume']
+            data[ticker] = {
+                'Current Price': current_price,
+                #'Volume': volume
+            }
+            print(f"Ticker: {ticker}, Current Price: {current_price}") #, Volume: {volume}
+    return data
 
+#list of tickers to track
+tickers = [
+    "AAPL", "MSFT", "AMZN", "NVDA", "GOOGL", "GOOG", "META", "TSLA", "V",
+    "UNH", "LLY", "XOM", "JNJ", "JPM", "WMT", "MA", "PG", "ORCL", "MRK",
+    "AVGO", "HD", "CVX", "PEP", "KO", "COST", "MCD", "ABBV", "ADBE", "CRM",
+    "TMO", "NKE", "PFE", "ASML", "BMY", "MDT", "LIN", "DHR", "TXN", "CMCSA",
+    "DIS", "VZ", "HON", "ABT", "SCHW", "PM", "IBM", "QCOM", "ACN", "LMT",
+    "AMD", "AMT", "CHTR", "CAT", "ELV", "BLK", "DE", "NE", "INTU", "MU"
+    ]
+try: 
+    while True:
+        #fetch and display the data every 5 seconds
+        current_data = get_current_data(tickers)
+        time.sleep(5)
+except KeyboardInterrupt:
+    print("Data retrieval stopped by user.")
 
 @app.route('/api/holdings', methods=['GET'])
 # Get the json list of transactions from our database
