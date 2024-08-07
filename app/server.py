@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 import threading
+from decimal import Decimal
 
 from unicodedata import decimal
 
@@ -17,17 +18,59 @@ mydb = mysql.connector.connect(
     database="Portfolio"
 )
 
+# list of tickers to track
+tickers = [
+    "AAPL", "MSFT", "AMZN", "NVDA", "GOOGL", "GOOG", "META", "TSLA", "V",
+    "UNH", "LLY", "XOM", "JNJ", "JPM", "WMT", "MA", "PG", "ORCL", "MRK",
+    "AVGO", "HD", "CVX", "PEP", "KO", "COST", "MCD", "ABBV", "ADBE", "CRM",
+    "TMO", "NKE", "PFE", "ASML", "BMY", "MDT", "LIN", "DHR", "TXN", "CMCSA",
+    "DIS", "VZ", "HON", "ABT", "SCHW", "PM", "IBM", "QCOM", "ACN", "LMT",
+    "AMD", "AMT", "CHTR", "CAT", "ELV", "BLK", "DE", "NE", "INTU", "MU"
+]
+
+
+# get current data for tickers
+#@app.route('/api/currentdata', methods=['GET'])
+def get_current_data(tickers):
+    data = {}
+    for ticker in tickers:
+        stock = yf.Ticker(ticker)
+        info = stock.history(period="1d", interval="1m")
+        if not info.empty:
+            current_price = info.iloc[-1]['Close']
+            #volume = info.iloc[-1]['Volume']
+            data[ticker] = {
+                'Current Price': round(Decimal(current_price), 2),
+                #'Volume': volume
+            }
+            #print(f"Ticker: {ticker}, Current Price: {current_price}") #, Volume: {volume}
+    return data
+
+
+current_data = get_current_data(tickers)
+
+
+#continously update the data in the background
+def update_data(ticker_list):
+    while True:
+        try:
+            #fetch and display the data every 5 seconds
+            global current_data
+            current_data = get_current_data(ticker_list)
+            time.sleep(5)
+        except Exception as e:
+            print(f"Data retrieval error: {str(e)}")
+
+
+#run in the background
+threading.Thread(target=update_data, args=(tickers,), daemon=True).start()
+
+
 def calculate_holdings():
     cursor2 = mydb.cursor()
     cursor2.execute("Select * from Transactions")
     transactions = cursor2.fetchall()
-    cursor2.execute("Select * from Stocks")
-    stocks = cursor2.fetchall()
     cursor2.close()
-    stock_prices = {}
-    # Convert stocks from list to dictionary
-    for stock in stocks:
-        stock_prices[stock[0]] = stock[1]
 
     holding_amounts = {}
     holding_realized_pnls = {}
@@ -51,53 +94,19 @@ def calculate_holdings():
             holding_realized_pnls[ticker] = volume * -1 * purchase_price
 
         #transaction[4] is volume as positive number always
+    print("Current Data contains: " + str(current_data))
+    print("Type of price: " + str(type(current_data["TSLA"]['Current Price'])))
     for ticker in holding_amounts.keys():
-        holding_unrealized_pnls[ticker] = holding_amounts[ticker] * stock_prices[ticker] + holding_realized_pnls[ticker]
+        holding_unrealized_pnls[ticker] = holding_amounts[ticker] * current_data[ticker]['Current Price'] + \
+                                          holding_realized_pnls[ticker]
 
-    return holding_amounts, stock_prices, holding_realized_pnls, holding_unrealized_pnls
+    return holding_amounts, current_data, holding_realized_pnls, holding_unrealized_pnls
+
 
 @app.route('/', methods=['GET'])
 def start_page():
     # start up our page. Maybe call our javascript to render stuff ** CHECK
     return render_template("home.html")
-
-# get current data for tickers
-#@app.route('/api/currentdata', methods=['GET'])
-def get_current_data(tickers):
-    data = {}
-    for ticker in tickers:
-        stock = yf.Ticker(ticker)
-        info = stock.history(period="1d", interval="1m")
-        if not info.empty:
-            current_price = info.iloc[-1]['Close']
-            #volume = info.iloc[-1]['Volume']
-            data[ticker] = {
-                'Current Price': current_price,
-                #'Volume': volume
-            }
-            #print(f"Ticker: {ticker}, Current Price: {current_price}") #, Volume: {volume}
-    return data
-
-#list of tickers to track
-tickers = [
-    "AAPL", "MSFT", "AMZN", "NVDA", "GOOGL", "GOOG", "META", "TSLA", "V",
-    "UNH", "LLY", "XOM", "JNJ", "JPM", "WMT", "MA", "PG", "ORCL", "MRK",
-    "AVGO", "HD", "CVX", "PEP", "KO", "COST", "MCD", "ABBV", "ADBE", "CRM",
-    "TMO", "NKE", "PFE", "ASML", "BMY", "MDT", "LIN", "DHR", "TXN", "CMCSA",
-    "DIS", "VZ", "HON", "ABT", "SCHW", "PM", "IBM", "QCOM", "ACN", "LMT",
-    "AMD", "AMT", "CHTR", "CAT", "ELV", "BLK", "DE", "NE", "INTU", "MU"
-    ]
-#continously update the data in the background
-def update_data(tickers):
-    while True:
-        try:
-            #fetch and display the data every 5 seconds
-            current_data = get_current_data(tickers)
-            time.sleep(5)
-        except Exception as e:
-            print(f"Data retrieval error: {str(e)}")
-#run in the background
-threading.Thread(target=update_data, daemon=True).start()
 
 
 @app.route('/api/holdings', methods=['GET'])
@@ -106,10 +115,12 @@ def get_holdings():
     holdings = []
     holding_amounts, stock_prices, holding_realized_pnls, holding_unrealized_pnls = calculate_holdings()
     for ticker in holding_amounts.keys():
-        holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker],\
-                   "realized_pnl": holding_realized_pnls[ticker], "unrealized_pnl" : holding_unrealized_pnls[ticker]}
+        holding = {"ticker": ticker, "volume": holding_amounts[ticker],
+                   "curr_price": stock_prices[ticker]['Current Price'], \
+                   "realized_pnl": holding_realized_pnls[ticker], "unrealized_pnl": holding_unrealized_pnls[ticker]}
         holdings.append(holding)
     return jsonify(holdings)
+
 
 @app.route('/api/transactions', methods=['GET'])
 # Get the json list of transactions from our database
@@ -122,6 +133,7 @@ def get_transactions():
     cursor1.close()
     return jsonify(result)
 
+
 @app.route('/api/addTransaction', methods=['POST'])
 # add a transaction to our database given user inputs from payload
 def add_transaction():
@@ -131,11 +143,9 @@ def add_transaction():
 
     cursor = mydb.cursor(buffered=True)
     holdings, stock_prices, holding_realized_pnls, holding_unrealized_pnls = calculate_holdings()
-    # cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
-    # price = cursor.fetchone()
 
-    if ticker in stock_prices.keys():
-        price = stock_prices[ticker]
+    if ticker in current_data.keys():
+        price = current_data[ticker]['Current Price']
     else:
         cursor.close()
         return {'error': "Ticker not available"}, 404
@@ -151,13 +161,10 @@ def add_transaction():
     cursor.close()
     return jsonify({'message': 'Transaction completed successfully'})
 
+
 @app.route('/api/checkPrice/<string:ticker>', methods=['GET'])
 # Checks the price of a stock given a ticker
 def check_stock_price(ticker):
-    # cursor = mydb.cursor()
-    # cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
-    # price = cursor.fetchone()
-    # cursor.close()
     price = current_data[ticker]['Current Price']
     print(price)
     if price:
@@ -165,27 +172,24 @@ def check_stock_price(ticker):
     else:
         return jsonify({'error': 'Price not found'}), 404
 
+
 @app.route('/api/stocks', methods=['GET'])
 # Gets the list of stocks from our database
 def get_stocks():
-    cursor = mydb.cursor()
+    return jsonify(current_data)
 
-    cursor.execute("Select * from Stocks")
-    result = cursor.fetchall()
 
-    cursor.close()
-    return jsonify(result)
+# @app.route('/api/updateStock', methods=['PUT'])
+# # Updates the price of (one) stock given ticker
+# def update_stocks():
+#     ticker = request.json['ticker']
+#     price = request.json['price']
+#     cursor = mydb.cursor()
+#     cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
+#     mydb.commit()
+#     cursor.close()
+#     return jsonify({'message': 'Stocks updated successfully'})
 
-@app.route('/api/updateStock', methods=['PUT'])
-# Updates the price of (one) stock given ticker
-def update_stocks():
-    ticker = request.json['ticker']
-    price = request.json['price']
-    cursor = mydb.cursor()
-    cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
-    mydb.commit()
-    cursor.close()
-    return jsonify({'message': 'Stocks updated successfully'})
 
 if __name__ == '__main__':
     app.run()
