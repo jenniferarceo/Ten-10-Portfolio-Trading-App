@@ -24,22 +24,26 @@ def calculate_holdings():
         stock_prices[stock[0]] = stock[1]
 
     holding_amounts = {}
-    print(stocks)
-    print(stock_prices)
+    holding_realized_pnls = {}
     # Calculates the holding amount for each ticker
     for transaction in transactions:
         # From database: int_key, type, ticker, price, volume, date
         transaction_type = transaction[1]
         ticker = transaction[2]
+        purchase_price = transaction[3]
         volume = transaction[4]
+
         if transaction_type == "SELL":
             volume = volume * -1
 
         if ticker in holding_amounts.keys():
             holding_amounts[ticker] += volume
+            holding_realized_pnls[ticker] += volume * -1 * purchase_price
         else:
             holding_amounts[ticker] = volume
-    return holding_amounts, stock_prices
+            holding_realized_pnls[ticker] = volume * -1 * purchase_price
+
+    return holding_amounts, stock_prices, holding_realized_pnls
 
 @app.route('/', methods=['GET'])
 def start_page():
@@ -52,9 +56,9 @@ def start_page():
 # Get the json list of transactions from our database
 def get_holdings():
     holdings = []
-    holding_amounts, stock_prices = calculate_holdings()
+    holding_amounts, stock_prices, holding_realized_pnls = calculate_holdings()
     for ticker in holding_amounts.keys():
-        holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker]}
+        holding = {"ticker": ticker, "volume": holding_amounts[ticker], "curr_price": stock_prices[ticker], "realized_pnl": holding_realized_pnls[ticker]}
         holdings.append(holding)
     return jsonify(holdings)
 
@@ -77,7 +81,7 @@ def add_transaction():
     quantity = request.json['quantity']
 
     cursor = mydb.cursor(buffered=True)
-    holdings, stock_prices = calculate_holdings()
+    holdings, stock_prices, holding_realized_pnls = calculate_holdings()
     # cursor.execute("SELECT price_today FROM stocks WHERE ticker = \'" + ticker + "\'")
     # price = cursor.fetchone()
 
