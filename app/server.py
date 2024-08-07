@@ -5,6 +5,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import yfinance as yf
+import threading
 
 from unicodedata import decimal
 
@@ -60,7 +61,7 @@ def start_page():
     # start up our page. Maybe call our javascript to render stuff ** CHECK
     return render_template("home.html")
 
-# update the current price every five seconds
+# get current data for tickers
 #@app.route('/api/currentdata', methods=['GET'])
 def get_current_data(tickers):
     data = {}
@@ -86,13 +87,18 @@ tickers = [
     "DIS", "VZ", "HON", "ABT", "SCHW", "PM", "IBM", "QCOM", "ACN", "LMT",
     "AMD", "AMT", "CHTR", "CAT", "ELV", "BLK", "DE", "NE", "INTU", "MU"
     ]
-# try:
-#     while True:
-#         #fetch and display the data every 5 seconds
-#         current_data = get_current_data(tickers)
-#         time.sleep(5)
-# except KeyboardInterrupt:
-#     print("Data retrieval stopped by user.")
+#continously update the data in the background
+def update_data(tickers):
+    while True:
+        try:
+            #fetch and display the data every 5 seconds
+            current_data = get_current_data(tickers)
+            time.sleep(5)
+        except Exception as e:
+            print(f"Data retrieval error: {str(e)}")
+#run in the background
+threading.Thread(target=update_data, daemon=True).start()
+
 
 @app.route('/api/holdings', methods=['GET'])
 # Get the json list of transactions from our database
