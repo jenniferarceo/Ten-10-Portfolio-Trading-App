@@ -76,44 +76,42 @@
             </ul>
 
             <!-- Tab Content -->
-            <div class="tab-content">
-              <!-- Holdings -->
-              <div class="tab-pane active" id="tab1">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>SYMBOL</th>
-                      <th>QUANTITY</th>
-                      <th>CURRENT PRICE</th>
-                    </tr>
-                  </thead>
-                  <tbody id="table-body">
-                    <!-- INSERT DATA -->
-                  </tbody>
-                </table>
-              </div>
-
-              <div>
-                <!-- Transaction -->
-                <h2 class="col-sm-12 mb-3 mt-5">TRANSACTIONS</h2>
-                
-                <div id="temp"></div>
-                <div class="transactions-container">
-                  <table class="table table-striped">
-                    <thead id="thead">
+              <div class="tab-content">
+                <!-- Holdings -->
+                <div class="tab-pane active" id="tab1">
+                  <table class="table">
+                    <thead>
                       <tr>
                         <th>SYMBOL</th>
-                        <th>TYPE</th>
-                        <th>PRICE</th>
                         <th>QUANTITY</th>
-                        <th>TRANSACTION DATE</th>
+                        <th>CURRENT PRICE</th>
                       </tr>
                     </thead>
-                    <tbody id="transactions-table-body">
-                      <!--INSERT DATA -->
+                    <tbody id="holdings-table-body">
+                      <!-- INSERT DATA -->
                     </tbody>
                   </table>
                 </div>
+
+                <div>
+                  <!-- Transaction -->
+                  <h2 class="col-sm-12 mb-3 mt-5">TRANSACTIONS</h2>
+                  <div class="transactions-container">
+                    <table class="table table-striped">
+                      <thead id="thead">
+                        <tr>
+                          <th>SYMBOL</th>
+                          <th>TYPE</th>
+                          <th>PRICE</th>
+                          <th>QUANTITY</th>
+                          <th>TRANSACTION DATE</th>
+                        </tr>
+                      </thead>
+                      <tbody id="transactions-table-body">
+                        <!--INSERT DATA -->
+                      </tbody>
+                    </table>
+                  </div>
               </div>
             </div>
           </div>

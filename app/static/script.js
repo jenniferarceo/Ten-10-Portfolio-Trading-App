@@ -53,63 +53,69 @@ function LiveLineGraph() {
 
 // pie graph
 function PieChart(data) {
-    let portfolio = [];
+    let dataPoints = [];
+    let totalValue = 0;
+
+    // calculate total portfolio value
     for (const item in data) {
-        let value = item["volume"] * parseInt(item["curr_price"]);
-        let ticker = item["ticker"];
-        portfolio.push([value, ticker]);
+        currItem = data[item];
+        let value = currItem["volume"] * parseInt(currItem["curr_price"]);
+        totalValue += value;
     }
 
-    for (const item in portfolio) {
-        console.log(item)
+    // add stock percentage as data points
+    for (const item in data) {
+        currItem = data[item];
+        let value = currItem["volume"] * parseInt(currItem["curr_price"]) / totalValue;
+        let ticker = currItem["ticker"];
+
+        if (value != 0) {
+            dataPoints.push({
+                y: (value * 100).toFixed(2),
+                label: ticker
+            });
+        }
     }
 
     var chart = new CanvasJS.Chart("chartContainer2", {
         theme: "light2", // "light1", "light2", "dark1", "dark2"
         exportEnabled: false,
         animationEnabled: true,
-        title: {
-            text: ""
-        },
+        backgroundColor: "#F4F4F4",
         data: [{
             type: "pie",
             startAngle: 25,
             toolTipContent: "<b>{label}</b>: {y}%",
-            showInLegend: "true",
+            showInLegend: true,
             legendText: "{label}",
             indexLabelFontSize: 12,
-            indexLabel: "{label} - {y}%",
-            dataPoints: [
-                { y: portfolio[0][0], label: portfolio[0][1] },
-                { y: portfolio[1][0], label: portfolio[1][1] },
-                { y: portfolio[2][0], label: portfolio[2][1] },
-                
-            ]
+            indexLabel: "{label} {y}%",
+            dataPoints: dataPoints
         }]
     });
     chart.render();
 }
     
-   // Async function for getting transactions data
-   async function getHoldings(){
-    let url = '/api/holdings'
-    let response = await fetch(url);
-    let result = await response.json();
-    if (response.ok){
-        console.log("Successfully got Data");
-        console.log(result);
-        holdings = result;
-        displayPortfolio(result);
-        PieChart(result);
-    }else{
-        alert("Error getting holdings: " + result.message);
-        return null;
-    }
-   }
+// Async function for getting transactions data
+async function getHoldings(){
+let url = '/api/holdings'
+let response = await fetch(url);
+let result = await response.json();
+if (response.ok){
+    console.log("Successfully got Data");
+    console.log(result);
+    holdings = result;
+    displayPortfolio(result);
+    await PieChart(holdings);
+}else{
+    alert("Error getting holdings: " + result.message);
+    return null;
+}
+}
 
 // display portfolio
 function displayPortfolio(data) {
-    const tbody = document.getElementById('table-body');
+    const tbody = document.getElementById('holdings-table-body');
     tbody.innerHTML = '';
 
     data.forEach(item => {
@@ -128,7 +134,9 @@ function displayPortfolio(data) {
         currPrice.textContent = item["curr_price"];
         row.appendChild(currPrice);
 
-        tbody.appendChild(row);
+        if (item["volume"] != 0) {
+            tbody.appendChild(row);
+        }
     });
 }
 
@@ -182,10 +190,10 @@ async function addTransaction(event) {
         console.error('Error:', error);
         alert('Error adding transaction'+ error.message); //just display a generic error message after logging the errors to the console
     }
- }
+}
 
- // get all transactions
- async function getTransactions() {
+// get all transactions
+async function getTransactions() {
     try {
         //request to fetch transactions
         const response = await fetch('/api/transactions', {
@@ -215,7 +223,8 @@ async function addTransaction(event) {
         console.error('Error fetching transactions:', error);
         alert('Error fetching transactions');
     }
- }
+}
+
 //display transactions
 function displayTransactions(transactions) {
     const transactionsTableBody = document.getElementById('transactions-table-body');
@@ -247,8 +256,11 @@ async function updateTable() {
  form.addEventListener('click', addTransaction);
 
  // get stock price
- async function getStockPrice() {
+ async function getStockPrice(event) {
+    event.preventDefault();
     const ticker = document.getElementById('ticker').value;
+    const quantityInput = document.getElementById('quantity');
+    quantityInput.value = '';
     
     try {
         // request to fetch stock price
@@ -278,19 +290,19 @@ async function updateTable() {
         console.error('Error fetching stock price:', error);
         alert('Error fetching stock price');
     }
- }
+}
 
- function displayStockPrice(stock) {
+function displayStockPrice(stock) {
     const currPrice = document.getElementById('currPrice');
     currPrice.textContent = "$" + `${stock}`;
- }
+}
 
- const price = document.getElementById('checkPrice');
- price.addEventListener('click', getStockPrice);
+const price = document.getElementById('checkPrice');
+price.addEventListener('click', getStockPrice);
 
- // clear current price value when the form is cleared
- const clearPrice = document.getElementById('clearButton')
- clearPrice.addEventListener('click', () => {
+// clear current price value when the form is cleared
+const clearPrice = document.getElementById('clearButton')
+clearPrice.addEventListener('click', () => {
     const currPrice = document.getElementById('currPrice');
     currPrice.textContent = "---";
- })
+})

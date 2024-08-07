@@ -49,7 +49,7 @@ thead, tbody {
     display: block;
 }
 
-.transactions-container thead {
+thead {
     position: sticky;
     top: 0;
     z-index: 2;
@@ -60,6 +60,10 @@ thead, tbody {
 tbody {
     overflow-y: auto;
     overflow-x: hidden; 
+}
+
+#holdings-table-body {
+    max-height: 300px;
 }
 
 #transactions-table-body {
@@ -73,22 +77,26 @@ tr {
 }
 
 /* Scrollbar */
-#transactions-table-body::-webkit-scrollbar {
+#transactions-table-body::-webkit-scrollbar,
+#holdings-table-body::-webkit-scrollbar {
     width: 12px;
     height: 12px; 
 }
   
-#transactions-table-body::-webkit-scrollbar-track {
+#transactions-table-body::-webkit-scrollbar-track,
+#holdings-table-body::-webkit-scrollbar-track {
     background: #F4F4F4;
 }
   
-#transactions-table-body::-webkit-scrollbar-thumb {
+#transactions-table-body::-webkit-scrollbar-thumb,
+#holdings-table-body::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 6px;
     min-height: 35px;
 }
   
-#transactions-table-body::-webkit-scrollbar-thumb:hover {
+#transactions-table-body::-webkit-scrollbar-thumb:hover,
+#holdings-table-body::-webkit-scrollbar-thumb:hover {
     background: #555; 
 }
 
