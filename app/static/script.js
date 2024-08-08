@@ -113,7 +113,7 @@ function PieChart(data) {
 let pnl = [];
 function updatePNL(dataPoint) {
     if (pnl.length == 21) {
-        pnl.pop();
+        pnl.shift();
         pnl.push(dataPoint);
     }
     else {
