@@ -85,8 +85,6 @@ def calculate_holdings():
             holding_realized_pnls[ticker] = volume * -1 * purchase_price
 
         #transaction[4] is volume as positive number always
-    print("Current Data contains: " + str(current_data))
-    print("Type of price: " + str(type(current_data["TSLA"]['Current Price'])))
     for ticker in holding_amounts.keys():
         holding_unrealized_pnls[ticker] = holding_amounts[ticker] * current_data[ticker]['Current Price'] + \
                                           holding_realized_pnls[ticker]
