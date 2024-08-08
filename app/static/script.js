@@ -130,7 +130,7 @@ function displayPerformance(data) {
         currItem = data[item];
         unrealizedVal += parseInt(currItem["unrealized_pnl"]);
     }
-    document.getElementById("todaysChange").textContent = unrealizedVal;
+    document.getElementById("todaysChange").textContent = "$" + unrealizedVal;
     updatePNL(unrealizedVal);
 
 
@@ -141,7 +141,7 @@ function displayPerformance(data) {
         let value = currItem["volume"] * parseInt(currItem["curr_price"]);
         accountValue += value;
     }
-    document.getElementById("accountValue").textContent = accountValue;
+    document.getElementById("accountValue").textContent = "$" + accountValue;
 }
     
 // Async function for getting transactions data
@@ -180,7 +180,7 @@ function displayPortfolio(data) {
         row.appendChild(qty);
 
         const currPrice = document.createElement('td');
-        currPrice.textContent = item["curr_price"];
+        currPrice.textContent = "$" + item["curr_price"];
         row.appendChild(currPrice);
 
         if (item["volume"] != 0) {
@@ -286,7 +286,7 @@ function displayTransactions(transactions) {
         row.innerHTML = `
         <td>${transaction[2]}</td>
         <td>${transaction[1]}</td>
-        <td>${transaction[3]}</td>
+        <td>$${transaction[3]}</td>
         <td>${transaction[4]}</td>
         <td>${transaction[5]}</td>
         `;
