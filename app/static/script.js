@@ -1,7 +1,15 @@
 window.addEventListener('load', function() {
     LiveLineGraph();
     updateTable();
+    setInterval(function(){
+        if (!isFetchingHoldings) {
+            isFetchingHoldings = true;
+            getHoldings();
+        }
+    }, 5000);
 });
+
+let isFetchingHoldings = false;
 
 var holdings;
 
@@ -45,8 +53,7 @@ function LiveLineGraph() {
     };
     
     updateChart(1);
-    setInterval(function(){updateChart(1)}, updateInterval);
-    
+    setInterval(function(){updateChart(1)}, updateInterval); 
 }
 
 // pie graph
@@ -94,6 +101,7 @@ function PieChart(data) {
     chart.render();
 }
 
+// store unrealized pnl values
 let pnl = [];
 function updatePNL(dataPoint) {
     if (pnl.length == 21) {
@@ -106,6 +114,7 @@ function updatePNL(dataPoint) {
     pnl.forEach(item => console.log("Item: "+item));
 }
 
+// display portfolio performance
 function displayPerformance(data) {
     // calculate total unrealized value
     let unrealizedVal = 0;
@@ -129,25 +138,23 @@ function displayPerformance(data) {
     
 // Async function for getting transactions data
 async function getHoldings(){
-let url = '/api/holdings'
-let response = await fetch(url);
-let result = await response.json();
-if (response.ok){
-    console.log("Successfully got Data");
-    console.log(result);
-    holdings = result;
-    displayPortfolio(result);
-    PieChart(holdings);
-    displayPerformance(holdings);
-}else{
-    alert("Error getting holdings: " + result.message);
-    return null;
-}
+    let url = '/api/holdings'
+    let response = await fetch(url);
+    let result = await response.json();
+    if (response.ok){
+        console.log("Successfully got Data");
+        console.log(result);
+        holdings = result;
+        displayPortfolio(result);
+        PieChart(holdings);
+        displayPerformance(holdings);
+    }else{
+        alert("Error getting holdings: " + result.message);
+        return null;
+    }
 }
 
-setInterval(function(){getHoldings()}, 5000);
-
-// display portfolio
+// display portfolio holdings
 function displayPortfolio(data) {
     const tbody = document.getElementById('holdings-table-body');
     tbody.innerHTML = '';
@@ -281,8 +288,21 @@ function displayTransactions(transactions) {
 
 // update transactions and holdings table
 async function updateTable() {
-    await getTransactions();
-    await getHoldings();
+    try {
+        await getTransactions();
+
+        if (!isFetchingHoldings) {
+            isFetchingHoldings = true; // set flag to indicate fetching is in progress
+
+            await getHoldings();
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    } finally {
+        if (isFetchingHoldings) {
+            isFetchingHoldings = false; // reset flag to show fetching is complete
+        }
+    }
 }
 
  // handle form submission
@@ -326,6 +346,7 @@ async function updateTable() {
     }
 }
 
+// display current stock price
 function displayStockPrice(stock) {
     const currPrice = document.getElementById('currPrice');
     currPrice.textContent = "$" + `${stock}`;
