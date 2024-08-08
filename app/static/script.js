@@ -1,15 +1,23 @@
 window.addEventListener('load', function() {
     LiveLineGraph();
     updateTable();
-    setInterval(function(){
-        if (!isFetchingHoldings) {
-            isFetchingHoldings = true;
-            getHoldings();
-        }
-    }, 5000);
 });
 
 let isFetchingHoldings = false;
+setInterval(async function(){
+    if (!isFetchingHoldings) {
+        try {
+            isFetchingHoldings = true;
+            await getHoldings();
+        } catch (error) {
+            console.error('Error fetching holdings:', error);
+        } finally {
+            if (isFetchingHoldings) {
+                isFetchingHoldings = false; // reset flag to show fetching is complete
+            }
+        }
+    }     
+}, 5000);
 
 var holdings;
 
@@ -288,19 +296,17 @@ function displayTransactions(transactions) {
 
 // update transactions and holdings table
 async function updateTable() {
-    try {
-        await getTransactions();
-
-        if (!isFetchingHoldings) {
+    if (!isFetchingHoldings) {
+        try {
             isFetchingHoldings = true; // set flag to indicate fetching is in progress
-
+            await getTransactions();
             await getHoldings();
-        }
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    } finally {
-        if (isFetchingHoldings) {
-            isFetchingHoldings = false; // reset flag to show fetching is complete
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            if (isFetchingHoldings) {
+                isFetchingHoldings = false; // reset flag to show fetching is complete
+            }
         }
     }
 }
