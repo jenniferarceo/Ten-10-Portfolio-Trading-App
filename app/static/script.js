@@ -1,7 +1,6 @@
 window.addEventListener('load', function() {
-    getHoldings();
-    LiveLineGraph();
-    getTransactions();
+    //LiveLineGraph();
+    updateTable();
 });
 
 var holdings;
