@@ -1,11 +1,11 @@
 window.addEventListener('load', function() {
-    //LiveLineGraph();
+    LiveLineGraph();
     updateTable();
 });
 
 var holdings;
 
-//live line graph
+// live line graph
 function LiveLineGraph() {
 
     var dps = []; // dataPoints
@@ -13,15 +13,16 @@ function LiveLineGraph() {
         title :{
             text: ""
         },
+        backgroundColor: "#F4F4F4",
         data: [{
             type: "line",
+            color: "#7A37E8",
             dataPoints: dps
         }]
     });
     
-    var xVal = 0;
-    var yVal = 100; 
-    var updateInterval = 1000;
+    var xVal = new Date();
+    var updateInterval = 5000;
     var dataLength = 20; // number of dataPoints visible at any point
     
     var updateChart = function (count) {
@@ -29,12 +30,11 @@ function LiveLineGraph() {
         count = count || 1;
     
         for (var j = 0; j < count; j++) {
-            yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
             dps.push({
-                x: xVal,
-                y: yVal
+                x: new Date(xVal.getTime()),
+                y: pnl[pnl.length-1]
             });
-            xVal++;
+            xVal.setSeconds(xVal.getSeconds() + 5);  
         }
     
         if (dps.length > dataLength) {
@@ -44,10 +44,10 @@ function LiveLineGraph() {
         chart.render();
     };
     
-    updateChart(dataLength);
-    setInterval(function(){updateChart()}, updateInterval);
+    updateChart(1);
+    setInterval(function(){updateChart(1)}, updateInterval);
     
-    }
+}
 
 // pie graph
 function PieChart(data) {
@@ -78,7 +78,7 @@ function PieChart(data) {
     var chart = new CanvasJS.Chart("chartContainer2", {
         theme: "light2", // "light1", "light2", "dark1", "dark2"
         exportEnabled: false,
-        animationEnabled: true,
+        //animationEnabled: true,
         backgroundColor: "#F4F4F4",
         data: [{
             type: "pie",
@@ -94,15 +94,28 @@ function PieChart(data) {
     chart.render();
 }
 
+let pnl = [];
+function updatePNL(dataPoint) {
+    if (pnl.length == 21) {
+        pnl.pop();
+        pnl.push(dataPoint);
+    }
+    else {
+        pnl.push(dataPoint);
+    }
+    pnl.forEach(item => console.log("Item: "+item));
+}
+
 function displayPerformance(data) {
     // calculate total unrealized value
     let unrealizedVal = 0;
     for (const item in data) {
         currItem = data[item];
         unrealizedVal += parseInt(currItem["unrealized_pnl"]);
-        console.log(unrealizedVal);
     }
     document.getElementById("todaysChange").textContent = unrealizedVal;
+    updatePNL(unrealizedVal);
+
 
     // calculate total portfolio value
     let accountValue = 0;
@@ -131,6 +144,8 @@ if (response.ok){
     return null;
 }
 }
+
+setInterval(function(){getHoldings()}, 5000);
 
 // display portfolio
 function displayPortfolio(data) {
