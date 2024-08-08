@@ -173,23 +173,5 @@ def check_stock_price(ticker):
         return jsonify({'error': 'Price not found'}), 404
 
 
-@app.route('/api/stocks', methods=['GET'])
-# Gets the list of stocks from our database
-def get_stocks():
-    return jsonify(current_data)
-
-
-# @app.route('/api/updateStock', methods=['PUT'])
-# # Updates the price of (one) stock given ticker
-# def update_stocks():
-#     ticker = request.json['ticker']
-#     price = request.json['price']
-#     cursor = mydb.cursor()
-#     cursor.execute("UPDATE Stocks SET price = %s WHERE ticker = %s", (price, ticker))
-#     mydb.commit()
-#     cursor.close()
-#     return jsonify({'message': 'Stocks updated successfully'})
-
-
 if __name__ == '__main__':
     app.run()
