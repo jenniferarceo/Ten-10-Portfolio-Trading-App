@@ -1,6 +1,6 @@
 # Ten-10 Porfolio Trading App
 
-The Ten-10 Portfolio Trading App is a web-based application designed to help users manage and track their stock portfolios. It allows users to view their holdings, add and manage transactions, and see real-time updates of stocks prices adn porfolio performance. The application is built using Flask for the backend and MySQL for data storage, with a frontend that provides interactive visualizations and data tables.
+The Ten-10 Portfolio Trading App is a web-based application designed to help users manage and track their stock portfolios. It allows users to view their holdings, add and manage transactions, and see real-time updates of stocks prices and porfolio performance. The application is built using Flask for the backend and MySQL for data storage, with a frontend that provides interactive visualizations and data tables.
 
 ---
 
@@ -55,6 +55,7 @@ cd portfolio-ten-team-10-jennifer-kelly-oruru
 python3 -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
+
 3. Set up the MySql database:
 
 ```sql
@@ -69,10 +70,12 @@ CREATE TABLE Transactions (
     quantity           INT NOT NULL,
     transaction_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 ```
+
 4. Edit database configuration:
 
-    * Open `servery.py` and update the database connection parameters (host, user, password, database) to match your MySQL configuration.
+    * Open `server.py` and update the database connection parameters (host, user, password, database) to match your MySQL configuration.
 
 ---
 
@@ -93,7 +96,7 @@ The application will start on `http://127.0.0.1:5000/`.
     
     * **Place new order**: Enter the ticker, select the transaction type (BUY/SELL), and enter quantity. Use "CHECK PRICE" to fetch the current price, and "ORDER" to execute the transaction.
     * **Holdings table**: Displays current holdings including ticker, quantity, and price.
-    * **Transactions Table**: Shows a history of huy/sell transactions with details.
+    * **Transactions Table**: Shows a history of buy/sell transactions with details.
     * **Portfolio Performance**: A live updating line graph displays the total unrealized PNL, and a pie chart shows the stock distribution in the portfolio.
 
 ---
@@ -115,7 +118,7 @@ The application will start on `http://127.0.0.1:5000/`.
 `static/styles.css`
 
 * Custom styling for styling the application UI.
-* Ensuires consistency and responsive design across different devices.
+* Ensures consistency and responsive design across different devices.
 
 `static/db.sql`
 
