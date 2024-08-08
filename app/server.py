@@ -1,14 +1,9 @@
 from flask import Flask, jsonify, request, render_template
 import mysql.connector
 import time
-from datetime import datetime
-import numpy as np
-import pandas as pd
 import yfinance as yf
 import threading
 from decimal import Decimal
-
-from unicodedata import decimal
 
 app = Flask(__name__)
 mydb = mysql.connector.connect(
@@ -30,7 +25,6 @@ tickers = [
 
 
 # get current data for tickers
-#@app.route('/api/currentdata', methods=['GET'])
 def get_current_data(tickers):
     data = {}
     for ticker in tickers:
@@ -38,12 +32,9 @@ def get_current_data(tickers):
         info = stock.history(period="1d", interval="1m")
         if not info.empty:
             current_price = info.iloc[-1]['Close']
-            #volume = info.iloc[-1]['Volume']
             data[ticker] = {
                 'Current Price': round(Decimal(current_price), 2),
-                #'Volume': volume
             }
-            #print(f"Ticker: {ticker}, Current Price: {current_price}") #, Volume: {volume}
     return data
 
 
